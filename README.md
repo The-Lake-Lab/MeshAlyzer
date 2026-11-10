@@ -37,7 +37,7 @@ The MeshAlyzer device requires a Raspberry Pi 5 or Raspberry Pi 3 for operation.
 ### Raspberry Pi 5 Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/MeshAlyzer.git
+   git clone https://github.com/agadin/MeshAlyzer.git
    cd MeshAlyzer
    ```
 
@@ -51,49 +51,26 @@ The MeshAlyzer device requires a Raspberry Pi 5 or Raspberry Pi 3 for operation.
     source venv/bin/activate
     pip install -r requirements.txt
    ```
-4. Start the application:
-   ```bash
-   python main.py
-   ```
-
-5. Connect hardware components:
+4. Connect hardware components:
    - Link pressure sensors to ADCs as shown in the wiring diagram.
    - Ensure relays and valves are connected to the Raspberry Pi GPIO pins as specified.
 
-6. Launch the application:
+5. Launch the application (from the `MeshAlyzer` folder, with the venv active):
    ```bash
+   cd MeshAlyzer
+   source venv/bin/activate
    python main.py
    ```
 ### Raspberry Pi 3 setup
-1. Create automatic startupfile
-Create a file called '/etc/systemd/system/pi3-sensor.service' with the following content :
-```ini
-[Unit]
-Description=Sensor Data Sender Service
-After=network.target
+The Pi 3 reads the pressure transducers and streams them to the Pi 5 over TCP
+(port 65432) using `PressureSensorReader_rasp3.py`. Run it automatically at boot as a systemd service.
 
-[Service]
-ExecStart=/usr/bin/python3 /home/pi/path/to/PressureSensorReader.py
-Restart=always
-User=pi
-
-[Install]
-WantedBy=multi-user.target
-```
-Then enable and start the service with:
-
-```
-sudo systemctl enable pi3-sensor.service
-sudo systemctl start pi3-sensor.service
-```
-
-2. Run the script to test the sensor:
+1. Create the service file:
 ```bash
 sudo nano /etc/systemd/system/spidev-load.service
 ```
 add:
 ```ini
-[Unit]
 [Unit]
 Description=Pressure Sensor Client
 After=network.target
@@ -110,31 +87,28 @@ StandardError=inherit
 [Install]
 WantedBy=multi-user.target
 ```
-Then enable and start the service with:
+2. Enable and start the service:
 ```bash
-sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
 sudo systemctl enable spidev-load.service
 sudo systemctl start spidev-load.service
 ```
 
-##
 ### ADC Setup
-The MeshAlyzer uses the ADS1256 ADC for pressure sensing. Follow these steps to set it up:
+The MeshAlyzer uses a Waveshare ADS1263 High-Precision AD HAT for pressure sensing
+(driver: `ADS1263.py`, pins: `config.py`).
 
-1. wiring diagram
-Connect the ADS1256 to the Raspberry Pi 3:
-VCC → 5V
-GND → GND
-DIN (MOSI) → GPIO 10 (SPI0 MOSI)
-DOUT (MISO) → GPIO 9 (SPI0 MISO)
-SCLK → GPIO 11 (SPI0 SCLK)
-CS (Chip Select) → GPIO 8 (SPI0 CE0)
-DRDY (Data Ready) → GPIO 7
-RESET → GPIO 22
+1. Wiring (ADS1263 → Raspberry Pi 3), as set in `config.py`:
+   - DIN (MOSI) → GPIO 10 (SPI0 MOSI)
+   - DOUT (MISO) → GPIO 9 (SPI0 MISO)
+   - SCLK → GPIO 11 (SPI0 SCLK)
+   - CS (Chip Select) → GPIO 22
+   - DRDY (Data Ready) → GPIO 17
+   - RESET → GPIO 18
 
-2. Install the required library:
+2. Enable SPI (`sudo raspi-config` → Interface Options → SPI) and install the libraries:
 ```bash
-sudo apt-get install python3-lgpio
+sudo apt-get install python3-spidev python3-rpi.gpio
 ```
 
 
@@ -177,7 +151,7 @@ We welcome contributions to enhance the MeshAlyzer project!
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
 ---
 

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# Runtime output written by main.py
+data/
+data.csv
+variables.txt
+calibration.csv
+graph_recording.mp4
+img/ratfav.png
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

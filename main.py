@@ -28,14 +28,11 @@ from tkinter import ttk
 import matplotlib.ticker as ticker
 import datetime
 import tkinter as tk
-import subprocess
-import queue
 import traceback
 import threading
 import sys
 import os
 import filecmp
-import threading
 import cairosvg
 import xml.etree.ElementTree as ET
 from tkinter import messagebox
@@ -63,7 +60,6 @@ from joblib import load
 from calibrating_pressure_transducers.getCalibrationData import PressureCalibrator
 from settings_page import SettingsPage
 
-import os
 os.environ["DISPLAY"] = ":0"
 
 
@@ -2044,7 +2040,7 @@ class App(ctk.CTk):
                 shutil.copy('calibration.csv', os.path.join(folder_name, 'calibration.csv'))
 
         else:
-            print("Error: `calibration.txt` not found.")
+            print("Error: `calibration.csv` not found.")
 
         # copy current protocol into folder check redis current_protocol_out for base name and add ./protocols/
         current_protocol_out = self.protocol_name_current

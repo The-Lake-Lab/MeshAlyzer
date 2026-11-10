@@ -1,11 +1,28 @@
+# Raspberry Pi 5 (GUI + control) -- install inside the venv:
+#   pip install -r requirements.txt
+# Also required system-wide: sudo apt-get install python3-lgpio
+
+# GUI
 customtkinter
-lgpio
-spidev
-numpy
-customtkinter
-tkfontawesome
-opencv-python
-matplotlib
 Pillow
-opencv-python-headless
+matplotlib
+seaborn
+mss
+opencv-python
 cairosvg
+
+# Data / models (scikit-learn is needed to unpickle the .pkl/.joblib models)
+numpy
+pandas
+joblib
+scikit-learn
+
+# Hardware
+lgpio
+pyserial
+adafruit-blinka
+adafruit-circuitpython-lps2x
+
+# Raspberry Pi 3 (sensor reader, PressureSensorReader_rasp3.py) also needs:
+spidev
+# RPi.GPIO
