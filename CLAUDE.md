@@ -8,8 +8,9 @@ MeshAlyzer (Lake Lab, WashU BME) is a bench device that simulates cough pressure
 
 ## Running
 
-- Target hardware: Raspberry Pi 5 (GUI + control) and Raspberry Pi 3 (sensor reader). Most modules import `lgpio`, `spidev`, `board`/`busio`, or `RPi.GPIO` at import time and **will fail on Windows/macOS**. Don't try to run `main.py` or hardware scripts off-device; verify changes with `python -m py_compile <file>` instead.
-- Pi 5: `pip install -r requirements.txt` (plus `sudo apt-get install python3-lgpio`), then `python main.py`.
+- Target hardware: Raspberry Pi 5 (GUI + control) and Raspberry Pi 3 (sensor reader). Most modules import `lgpio`, `spidev`, `board`/`busio`, or `RPi.GPIO` at import time and **will fail on Windows/macOS**. Don't try to run `main.py` or hardware scripts off-device; verify changes with `python -m py_compile <file>` instead (on the Windows dev machine `python` isn't on PATH; use `py -m py_compile <file>`).
+- Pi 5: from the `MeshAlyzer` folder, `source venv/bin/activate`, then `python main.py`. Run it from the repo root: asset, model, and settings paths are relative to it. This launch flow must keep working unchanged.
+- Dependencies: `requirements.txt` lists everything `main.py` imports (plus `sudo apt-get install python3-lgpio`). Packages are unpinned; scikit-learn must stay compatible with the pickled models.
 - Pi 3: `PressureSensorReader_rasp3.py` runs as a systemd service (see README).
 - No test suite or linter is configured.
 
@@ -22,9 +23,12 @@ MeshAlyzer (Lake Lab, WashU BME) is a bench device that simulates cough pressure
 - `ValveController.py` — `lgpio` valve driver. **Active-LOW**: writing 1 is neutral/off, 0 activates. Valve 1 = supply 20 / vent 27; valve 2 = supply 12 / vent 24 (set in `App.__init__`).
 - `clamp_motor.py` — `MotorController` for the tissue clamp; `Ardunio/` and `arduino_adc/` hold Arduino sketches.
 - `calibrate_page.py`, `settings_page.py`, `valve_control_dropdown.py` — GUI pages/widgets.
-- `calibrating_pressure_transducers/` — transducer calibration scripts and `.joblib` models.
-- `inflation_time_model.pkl` / `deflation_time_model.pkl` — sklearn models used by `SmartInflateML` / `SmartDeflateML` to predict valve-open duration (built by `deflate_model.py`).
-- `debug/` — one-off hardware test scripts.
+- `calibrating_pressure_transducers/` — `getCalibrationData.py` defines `PressureCalibrator` (imported by `main.py`) and trains `trained_pressure_calibrator_multioutput.joblib`, the transducer model loaded at startup; `getCalibrationDatav2.py` and `combined_csv.py` are offline training/data-prep scripts with hard-coded paths.
+- `calibration_data/` — output folder written by `calibrate_page.py`.
+- `inflation_time_model.pkl` / `deflation_time_model.pkl` — sklearn models used by `SmartInflateML` / `SmartDeflateML` to predict valve-open duration (built offline by `Q_value_calc.py` and `deflate_model.py` respectively).
+- `debug/` — standalone hardware test scripts (LPS22 sensor, Pi 3 ↔ Pi 5 Ethernet throughput, ADS1263 SPI checks). Not imported by the GUI.
+- `img/` — GUI icons/logos, boot animation (`MeshAlyzer_.mp4`), and README images. `main.py` generates `img/ratfav.png` from `ratfav.ico` at startup.
+- Obsolete scripts (old UART/serial sensor readers, pre-`main.py` standalone GUIs, demos, vendor readmes) were removed in the November 2026 cleanup; recover them from git history if needed rather than re-adding copies.
 - Settings: `default_settings.txt` / `settings.txt` (`key = value` lines, read by `read_settings()`).
 
 ## Protocol files (`protocols/*.txt`)
@@ -46,7 +50,7 @@ When adding a command, add a branch in `process_protocol` and document it here.
 
 ## Data output
 
-Trials are saved to `./data/{timestamp}_{provided_name}_{animal_id}_{trial:02d}/` (name segment optional). The CSV's last column is the protocol step number.
+Trials are saved to `./data/{timestamp}_{provided_name}_{animal_id}_{trial:02d}/` (name segment optional). The CSV's last column is the protocol step number. While a trial runs, `main.py` writes scratch files in the repo root (`data.csv`, `variables.txt`, `calibration.csv`, `graph_recording.mp4`). These and `data/` are gitignored. `settings.txt` is tracked but rewritten from `default_settings.txt` on every launch, so edit the defaults file instead.
 
 ## Conventions and cautions
 
@@ -54,3 +58,4 @@ Trials are saved to `./data/{timestamp}_{provided_name}_{animal_id}_{trial:02d}/
 - Keep GUI updates on the Tk main thread; sensor reading and protocol execution run in background `threading.Thread`s.
 - Don't regenerate or overwrite the `.pkl`/`.joblib` models unless asked.
 - Line endings: the repo is checked in with LF; avoid committing whole-file CRLF conversions.
+- Remote: `The-Lake-Lab/MeshAlyzer` on GitHub is the main repo. Use it in README links, not personal forks.
