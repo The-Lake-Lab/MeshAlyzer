@@ -1,9 +1,9 @@
 
 # MeshAlyzer Device
 <div align="center">
-  <img src="https://raw.githubusercontent.com/agadin/MeshAlyzer/refs/heads/main/img/teampicmesh.jpg" alt="MeshAlyzer Team Picture" width="450"/>
+  <img src="https://raw.githubusercontent.com/The-Lake-Lab/MeshAlyzer/refs/heads/main/img/teampicmesh.jpg" alt="MeshAlyzer Team Picture" width="450"/>
   <br>
-  <img src="https://raw.githubusercontent.com/agadin/MeshAlyzer/refs/heads/main/img/UIoverview.png" alt="MeshAlyzer UI Overview" width="450"/>
+  <img src="https://raw.githubusercontent.com/The-Lake-Lab/MeshAlyzer/refs/heads/main/img/UIoverview.png" alt="MeshAlyzer UI Overview" width="450"/>
 </div>
 
 ## Table of Contents
@@ -37,7 +37,7 @@ The MeshAlyzer device requires a Raspberry Pi 5 or Raspberry Pi 3 for operation.
 ### Raspberry Pi 5 Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/agadin/MeshAlyzer.git
+   git clone https://github.com/The-Lake-Lab/MeshAlyzer.git
    cd MeshAlyzer
    ```
 
